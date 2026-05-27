@@ -6,9 +6,17 @@
 
 <ul>
 {#each taskState.tasks[todoId] as task }
-    <li>
-        <a href="/todos/{todoId}/tasks/{task.id}">{task.name}</a>
-        <button onclick={() => taskState.removeTask(todoId, task.id)}>Remove</button>
-    </li>
+    {#if !task.is_done}
+        <li>
+            <a href="/todos/{todoId}/tasks/{task.id}">{task.description}</a>
+            <button onclick={() => taskState.removeTask(todoId, task.id)}>Remove</button>
+            <button onclick={() => taskState.toggleDone(todoId, task.id)}>Mark done</button>
+        </li>
+    {:else}
+        <li>
+            <s>{task.description}</s>
+            <button onclick={() => taskState.toggleDone(todoId, task.id)}>Mark not done</button>
+        </li>
+    {/if}
 {/each}
 </ul>

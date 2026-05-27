@@ -23,9 +23,9 @@ const useTodoState = () => {
         get todos() {
             return todoState;
         },
-        addTodo: (name) => {
-            const newId = todoState.length > 0 ? Math.max(...todoState.map(t => t.id)) + 1 : 1;
-            todoState.push({id: newId, name:name});
+        addTodo: (todo) => {
+            todo.id = todoState.length > 0 ? Math.max(...todoState.map(t => t.id)) + 1 : 1;
+            todoState.push(todo);
             saveTodos();
         },
         removeTodo: (id) => {

@@ -20,13 +20,14 @@ const useTaskState = () => {
         get tasks() {
             return taskState;
         },
-        addTask: (todoId, name) => {
+        addTask: (todoId, task) => {
             if (!taskState[todoId]) {
                 taskState[todoId] = [];
             }
             const tasklist = taskState[todoId];
-            const newId = tasklist.length > 0 ? Math.max(...tasklist.map(t => t.id)) + 1 : 1;
-            taskState[todoId].push({ id: newId, name: name });
+            task.todo_id = todoId;
+            task.id = tasklist.length > 0 ? Math.max(...tasklist.map(t => t.id)) + 1 : 1;
+            taskState[todoId].push(task);
             saveTasks();
         },
         removeTask: (todoId, taskId) => {
@@ -38,6 +39,17 @@ const useTaskState = () => {
         },
         removeAllTasks: (todoId) => {
             delete taskState[todoId];
+            saveTasks();
+        },
+        toggleDone: (todoId, taskId) => {
+            let alteredTaskState = taskState[todoId];
+            for (let index = 0; index < alteredTaskState.length; index++) {
+                if (alteredTaskState[index].id === taskId) {
+                    alteredTaskState[index].is_done = !alteredTaskState[index].is_done;
+                    break;
+                }
+            }
+            taskState[todoId] = alteredTaskState;
             saveTasks();
         },
     };

@@ -1,6 +1,6 @@
 <script>
     import TaskList from "$lib/components/todos/TaskList.svelte";
-    import AddTask from '$lib/components/todos/AddTask.svelte';
+    import TaskForm from '$lib/components/todos/TaskForm.svelte';
     import { useTodoState } from '$lib/states/todoState.svelte.js';
     const todoState = useTodoState();
     let { todoId } = $props();
@@ -9,4 +9,4 @@
 
 <h1>Todo {todoName}</h1>
 <TaskList todoId={todoId} />
-<AddTask {todoId}/>
+<TaskForm {todoId}/>

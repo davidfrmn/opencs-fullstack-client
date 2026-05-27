@@ -8,7 +8,7 @@
 {#each todoState.todos as todo}
     <li>
         <a href="/todos/{todo.id}">{todo.name}</a>
-        <button onclick={todoState.removeTodo(todo.id)}>Remove</button>
+        <button onclick={() => todoState.removeTodo(todo.id)}>Remove</button>
     </li>
 {/each}
 </ul>

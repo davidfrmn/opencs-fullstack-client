@@ -1,8 +1,8 @@
 <script>
-    import AddTodo from '$lib/components/todos/AddTodo.svelte';
+    import TodoForm from '$lib/components/todos/TodoForm.svelte';
     import TodoList from "$lib/components/todos/TodoList.svelte";
 </script>
 
 
 <TodoList />
-<AddTodo />
+<TodoForm />
