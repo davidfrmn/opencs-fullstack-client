@@ -1,9 +1,10 @@
 import { Hono } from "@hono/hono";
+import { cors } from "@hono/hono/cors";
 import * as todoController from "./todoController.js";
 import * as taskController from "./taskController.js";
 
 const app = new Hono();
-
+app.use("/*", cors());
 
 app.post("/api/todos", todoController.create);
 app.get("/api/todos", todoController.readAll);

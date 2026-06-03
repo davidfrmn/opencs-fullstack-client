@@ -1,20 +1,28 @@
 import { browser } from '$app/environment';
-import { useTaskState } from '$lib/states/taskState.svelte';
+import * as todosApi from '$lib/apis/todosApi.js';
+import { useTaskState } from '$lib/states/taskState.svelte.js';
 
-const KEY = "todos";
-let initial_todos = [];
-
-if (browser && localStorage.getItem(KEY) !== null) {
-    initial_todos = JSON.parse(localStorage.getItem(KEY));
-}
-
-let todoState = $state(initial_todos);
+let todoState = $state([]);
 let taskState = useTaskState();
 
 
-const saveTodos = () => {
+const initTodos = async () => {
     if (browser) {
-        localStorage.setItem(KEY, JSON.stringify(todoState));
+        todoState = await todosApi.getTodos();
+    }
+};
+
+const initTodo = async (id) => {
+    if (!browser) {
+        return;
+    }
+
+    const fetchedTodo = await todosApi.getTodo(id);
+    const index = todoState.findIndex((todo) => todo.id === fetchedTodo.id);
+    if (index !== -1) {
+        todoState[index] = fetchedTodo;
+    } else {
+        todoState.push(fetchedTodo)
     }
 };
 
@@ -23,17 +31,23 @@ const useTodoState = () => {
         get todos() {
             return todoState;
         },
-        addTodo: (todo) => {
-            todo.id = todoState.length > 0 ? Math.max(...todoState.map(t => t.id)) + 1 : 1;
-            todoState.push(todo);
-            saveTodos();
+        addTodo: async (todo) => {
+            const newTodo = await todosApi.createTodo(todo);
+            todoState.push(newTodo);
         },
-        removeTodo: (id) => {
-            todoState = todoState.filter((todo) => todo.id !== id);
-            taskState.removeAllTasks(id);
-            saveTodos();
+        removeTodo: async (id) => {
+            const removedTodo = await todosApi.deleteTodo(id); 
+            todoState = todoState.filter((todo) => todo.id !== removedTodo.id);
+            taskState.removeAllTasks(removedTodo.id);
+        },
+        updateTodo: async (id, todo) => {
+            const updatedTodo = await todosApi.updateTodo(id, todo);
+            const index = todoState.findIndex((todo) => todo.id === updatedTodo.id);
+            if (index !== -1) {
+                todoState[index] = updatedTodo;
+            }
         },
     };
 };
 
-export { useTodoState };
+export { initTodos, initTodo, useTodoState };
