@@ -1,18 +1,28 @@
 import { browser } from '$app/environment';
+import * as tasksApi from "$lib/apis/tasksApi.js";
 
-const KEY = "tasks";
-let initial_tasks = {};
+let taskState = $state({});
 
-if (browser && localStorage.getItem(KEY) !== null) {
-    initial_tasks = JSON.parse(localStorage.getItem(KEY));
-}
-
-let taskState = $state(initial_tasks);
-
-const saveTasks = () => {
+const initTasks = async (todoId) => {
     if (browser) {
-        localStorage.setItem(KEY, JSON.stringify(taskState));
+        taskState[todoId] = await tasksApi.getTasks(todoId);
     }
+};
+
+const initTask = async (todoId, taskId) => {
+    if (!browser) {
+        return;
+    }
+    taskList = taskState[todoId] || [];
+    const fetchedTask = await tasksApi.getTask(todoId, taskId);
+
+    const index = taskList.findIndex((task) => task.id === fetchedTask.id);
+    if (index !== -1) {
+        taskList[index] = fetchedTask;
+    } else {
+        taskList.push(fetchedTask);
+    }
+    taskState[todoId] = taskList;
 };
 
 const useTaskState = () => {
@@ -20,39 +30,33 @@ const useTaskState = () => {
         get tasks() {
             return taskState;
         },
-        addTask: (todoId, task) => {
-            if (!taskState[todoId]) {
-                taskState[todoId] = [];
-            }
-            const tasklist = taskState[todoId];
-            task.todo_id = todoId;
-            task.id = tasklist.length > 0 ? Math.max(...tasklist.map(t => t.id)) + 1 : 1;
-            taskState[todoId].push(task);
-            saveTasks();
+        addTask: async (todoId, task) => {
+            const newTask = await tasksApi.createTask(todoId, task);
+            const taskList = taskState[todoId] || [];
+            taskList.push(newTask);
+            taskState[todoId] = taskList;
         },
-        removeTask: (todoId, taskId) => {
+        removeTask: async (todoId, taskId) => {
             const tasklist = taskState[todoId];
             if (tasklist) {
-                taskState[todoId] = tasklist.filter((task) => task.id !== taskId);
-                saveTasks();
+                const deletedTask = await tasksApi.deleteTask(todoId, taskId);
+                taskState[todoId] = tasklist.filter((task) => task.id !== deletedTask.id);
             }
         },
         removeAllTasks: (todoId) => {
+            // todosApi calls this function which deletes the todo
+            // which will cascade, so here we only have to remove them from the state
             delete taskState[todoId];
-            saveTasks();
         },
-        toggleDone: (todoId, taskId) => {
-            let alteredTaskState = taskState[todoId];
-            for (let index = 0; index < alteredTaskState.length; index++) {
-                if (alteredTaskState[index].id === taskId) {
-                    alteredTaskState[index].is_done = !alteredTaskState[index].is_done;
-                    break;
-                }
+        toggleDone: async (todoId, taskId) => {
+            const task = taskState[todoId].find(t => t.id === taskId);
+            if (!task) {
+                return;
             }
-            taskState[todoId] = alteredTaskState;
-            saveTasks();
+            task.is_done = !task.is_done;
+            const modifiedTask = await tasksApi.updateTask(todoId, taskId, task);
         },
     };
 };
 
-export { useTaskState };
+export { initTasks, initTask, useTaskState };
