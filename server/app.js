@@ -2,16 +2,19 @@ import { Hono } from "@hono/hono";
 import { cors } from "@hono/hono/cors";
 import * as todoController from "./todoController.js";
 import * as taskController from "./taskController.js";
+import * as authController from "./authController.js";
 
 const app = new Hono();
 app.use("/*", cors());
+
+app.post("/api/auth/register", authController.register);
+app.post("/api/auth/login", authController.login);
 
 app.post("/api/todos", todoController.create);
 app.get("/api/todos", todoController.readAll);
 app.get("/api/todos/:todoId", todoController.readOne);
 app.put("/api/todos/:todoId", todoController.update);
 app.delete("/api/todos/:todoId", todoController.deleteOne);
-
 
 app.post("/api/todos/:todoId/tasks", taskController.create);
 app.get("/api/todos/:todoId/tasks", taskController.readAll);
