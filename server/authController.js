@@ -1,5 +1,8 @@
+import * as jwt from "@hono/hono/jwt";
 import { hash, verify } from "scrypt";
 import * as authRepository from "./authRepository.js";
+
+const JWT_SECRET = "jwt_secret";
 
 const register = async (c) => {
   const user = await c.req.json();
@@ -25,9 +28,17 @@ const login = async (c) => {
     return c.json({ error: "Invalid email or password" }, 401);
   }
 
+  const payload = {
+    id: foundUser.id,
+    email: foundUser.email,
+    exp: Math.floor(Date.now() / 1000) + 60,
+  };
+  const token = await jwt.sign(payload, JWT_SECRET);
+
   return c.json({
-    message: "Login successful",
-    user: { email: foundUser.email },
+    message: `Welcome back ${foundUser.email}!`,
+    user: { id:foundUser.id, email: foundUser.email },
+    token
   });
 };
 
