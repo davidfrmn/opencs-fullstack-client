@@ -6,9 +6,19 @@ import * as authController from "./authController.js";
 import * as userController from "./userController.js";
 import * as statController from "./statController.js"
 import * as middlewares from "./middlewares.js";
+import { auth } from "./betterAuth.js";
 
 const app = new Hono();
-app.use("/*", cors());
+app.use(
+  "/*",
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
+
+app.on(["POST", "GET"], "/api/auth/**", (c) => auth.handler(c.req.raw));
+
 
 app.post("/api/auth/register", authController.register);
 app.post("/api/auth/login", authController.login);

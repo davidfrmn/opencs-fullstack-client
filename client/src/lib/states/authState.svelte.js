@@ -28,38 +28,49 @@ const useAuthState = () => {
       return token;
     },
     login: async (email, password) => {
-      const response = await authApi.login({ email, password });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Login failed");
-      }
-
-      const data = await response.json();
-      user = data.user;
-      token = data.token;
-
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
-
-      return data;
+      await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: "/",
+      }, {
+        onError: (ctx) => {
+          throw new Error(ctx.error.message || "Login failed");
+        },
+        onSuccess: (ctx) => {
+          const authToken = ctx.response.headers.get("set-auth-token");
+          if (authToken) {
+            localStorage.setItem(TOKEN_KEY, authToken);
+          }
+          const user = ctx.data.user;
+          if (user) {
+            localStorage.setItem(USER_KEY, JSON.stringify(user));
+          }
+        },
+      });
     },
     register: async (email, password) => {
-      const response = await authApi.register({ email, password });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Registration failed");
-      }
-
-      return await response.json();
+      await authClient.signUp.email({
+        email,
+        password,
+        name: email,
+        callbackURL: "/auth/login",
+      }, {
+        onError: (ctx) => {
+          throw new Error(ctx.error.message || "Registration failed");
+        },
+        onSuccess: (ctx) => {
+          window.location.href = "/auth/login";
+        },
+      });
     },
-    logout: () => {
+    logout: async () => {
       user = null;
       token = null;
+      await authClient.signOut();
 
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = "/";
     },
   };
 };

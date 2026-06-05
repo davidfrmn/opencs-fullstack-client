@@ -1,5 +1,4 @@
 <script>
-  import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { useAuthState } from "$lib/states/authState.svelte.js";
 
@@ -21,12 +20,8 @@
     try {
       if (page.params.action === "login") {
         await authState.login(email, password);
-        message = "Login successful! Redirecting...";
-        setTimeout(() => goto("/"), 1000);
       } else {
         await authState.register(email, password);
-        message = "Registration successful! You can now log in.";
-        setTimeout(() => goto("/auth/login"), 2000);
       }
     } catch (error) {
       errorMessage = error.message;
