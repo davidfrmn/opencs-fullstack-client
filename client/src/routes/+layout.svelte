@@ -11,6 +11,7 @@
       <button onclick={() => authState.logout()}>Logout</button>
     </div>
   {:else}
+    <span>Hello anonymous!</span>
     <ul>
       <li><a href="/auth/login">Login</a></li>
       <li><a href="/auth/register">Register</a></li>

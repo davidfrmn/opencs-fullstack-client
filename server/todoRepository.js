@@ -2,34 +2,43 @@ import postgres from "postgres";
 
 const sql = postgres();
 
-const create = async (todo) => {
-  const result = await sql`INSERT INTO todos (name, created_at)
-    VALUES (${todo.name}, NOW())
+const create = async (userId, todo) => {
+  const result = await sql`INSERT INTO todos (name, user_id, created_at)
+    VALUES (${todo.name}, ${userId}, NOW())
     RETURNING *`;
 
   return result[0];
 };
 
-const deleteById = async (id) => {
-  const result = await sql`DELETE FROM todos WHERE id = ${id} RETURNING *`;
+const deleteById = async (userId, id) => {
+  const result = await sql`
+  DELETE FROM todos 
+    WHERE id = ${id} AND user_id = ${userId}
+    RETURNING *`;
 
   return result[0];
 };
 
-const findAll = async () => {
-  return await sql`SELECT * FROM todos`;
+const findAll = async (userId) => {
+  return await sql`
+  SELECT * FROM todos
+    WHERE user_id = ${userId}
+    ORDER BY created_at DESC`;
 };
 
-const findById = async (id) => {
-  const result = await sql`SELECT * FROM todos WHERE id = ${id}`;
+const findById = async (userId, id) => {
+  const result = await sql`
+  SELECT * FROM todos 
+    WHERE id = ${id} AND user_id = ${userId}`;
 
   return result[0];
 };
 
-const updateById = async (id, todo) => {
-  const result = await sql`UPDATE todos
+const updateById = async (userId, id, todo) => {
+  const result = await sql`
+  UPDATE todos
     SET name = ${todo.name}, created_at = ${todo.created_at}
-    WHERE id = ${id}
+    WHERE id = ${id} AND user_id = ${userId}
     RETURNING *`;
 
   return result[0];

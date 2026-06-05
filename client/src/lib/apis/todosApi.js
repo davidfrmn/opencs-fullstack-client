@@ -1,9 +1,10 @@
 import { PUBLIC_API_URL } from "$env/static/public";
+import { authFetch } from "$lib/utils/fetchUtils";
 
 const BASE_URL = `${PUBLIC_API_URL}/api/todos`;
 
 const getTodos = async () => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}`
     );
     return await res.json();
@@ -11,7 +12,7 @@ const getTodos = async () => {
 
 
 const getTodo = async (todoId) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/${todoId}`
     );
     return await res.json();
@@ -19,7 +20,7 @@ const getTodo = async (todoId) => {
 
 
 const createTodo = async (todo) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}`,
         {
             method: "POST",
@@ -34,7 +35,7 @@ const createTodo = async (todo) => {
 
 
 const updateTodo = async (todoId, todo) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/${todoId}`,
         {
             method: "PUT",
@@ -49,7 +50,7 @@ const updateTodo = async (todoId, todo) => {
 
 
 const deleteTodo = async (todoId) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/${todoId}`,
         {
             method: "DELETE",

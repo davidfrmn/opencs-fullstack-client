@@ -1,2 +1,8 @@
-<h1>Welcome!</h1>
-<a href="/todos">Go to Todos</a>
+<script>
+  import { useAuthState } from "$lib/states/authState.svelte.js";
+  const authState = useAuthState();
+</script>
+
+{#if authState.token }
+    <a href="/todos">Go to your todos</a>
+{/if}

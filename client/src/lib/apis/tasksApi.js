@@ -1,9 +1,10 @@
 import { PUBLIC_API_URL } from "$env/static/public";
+import { authFetch } from "$lib/utils/fetchUtils";
 
 const BASE_URL = `${PUBLIC_API_URL}/api/todos`;
 
 const getTasks = async (todoId) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/${todoId}/tasks`
     );
     return await res.json();
@@ -11,7 +12,7 @@ const getTasks = async (todoId) => {
 
 
 const getTask = async (todoId, taskId) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/${todoId}/tasks/${taskId}`
     );
     return await res.json();
@@ -19,7 +20,7 @@ const getTask = async (todoId, taskId) => {
 
 
 const createTask = async (todoId, task) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/${todoId}/tasks`,
         {
             method: "POST",
@@ -34,7 +35,7 @@ const createTask = async (todoId, task) => {
 
 
 const updateTask = async (todoId, taskId, task) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/${todoId}/tasks/${taskId}`,
         {
             method: "PUT",
@@ -49,7 +50,7 @@ const updateTask = async (todoId, taskId, task) => {
 
 
 const deleteTask = async (todoId, taskId) => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/${todoId}/tasks/${taskId}`,
         {
             method: "DELETE",
