@@ -6,6 +6,14 @@ import * as authController from "./authController.js";
 import * as userController from "./userController.js";
 import * as statController from "./statController.js"
 import * as middlewares from "./middlewares.js";
+<<<<<<< Updated upstream
+=======
+import { zValidator } from "@hono/zod-validator";
+import { auth } from "./betterAuth.js";
+import * as validators from "./validators.js";
+import * as emailController from "./emailController.js";
+
+>>>>>>> Stashed changes
 
 const app = new Hono();
 app.use("/*", cors());
@@ -45,5 +53,7 @@ app.get("/api/profile", (c) => {
 app.use("/api/admin/*", middlewares.authenticate, middlewares.requireAnyRole("ADMIN"));
 app.get("/api/admin/users", userController.getAllUsers);
 app.get("/api/admin/stats", statController.stats);
+
+app.post("/api/emails", ...emailController.createEmail);
 
 export default app;
