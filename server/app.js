@@ -3,6 +3,8 @@ import { cors } from "@hono/hono/cors";
 import * as todoController from "./todoController.js";
 import * as taskController from "./taskController.js";
 import * as authController from "./authController.js";
+import * as userController from "./userController.js";
+import * as statController from "./statController.js"
 import * as middlewares from "./middlewares.js";
 
 const app = new Hono();
@@ -40,5 +42,8 @@ app.get("/api/profile", (c) => {
   return c.json({ email: user.email });
 });
 
+app.use("/api/admin/*", middlewares.authenticate, middlewares.requireAnyRole("ADMIN"));
+app.get("/api/admin/users", userController.getAllUsers);
+app.get("/api/admin/stats", statController.stats);
 
 export default app;

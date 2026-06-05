@@ -37,4 +37,9 @@ const deleteById = async (id) => {
   return result[0];
 };
 
-export { create, deleteById, findAll, findById, updateById };
+const numberOfTasks = async () => {
+  const result = await sql`SELECT COUNT(*) FROM todo_tasks`;
+  return parseInt(result[0].count);
+};
+
+export { create, deleteById, findAll, findById, updateById, numberOfTasks };

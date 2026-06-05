@@ -44,4 +44,12 @@ const updateById = async (userId, id, todo) => {
   return result[0];
 };
 
-export { create, deleteById, findAll, findById, updateById };
+const numberOfTodos = async () => {
+  const result = await sql`
+  SELECT COUNT(*) from todos
+  `;
+
+  return parseInt(result[0].count);
+};
+
+export { create, deleteById, findAll, findById, updateById, numberOfTodos };
